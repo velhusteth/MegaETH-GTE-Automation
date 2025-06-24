@@ -37,15 +37,12 @@ pip install -r requirements.txt
 
 
 ### 4. Thêm file .env để chứa ví
-Tạo file `.env` trong thư mục gốc của dự án và thêm private key của ví:
 
-```env
-PRIVATE_KEY=your_private_key
-```
+Set up key trong file wallet.txt nhé
 
 - **PRIVATE_KEY**: Private key của ví Ethereum cho testnet MegaEth (không có đầu `0x`) nhớ kỹ
-  ```env
-  PRIVATE_KEY=abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890
+  ```wallet.txt
+  Mỗi dòng 1 key nhé
   ```
 
 ---
