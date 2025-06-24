@@ -14,7 +14,7 @@ import os
 
 load_dotenv()
 
-def main(PRIVATE_KEY):
+def main(PRIVATE_KEY, swap_type, swap_count, swap_percent):
     print(appearance.ASCII_ART)
     print(appearance.CREDIT)
     
@@ -33,41 +33,6 @@ def main(PRIVATE_KEY):
     for token in config.GTE_TOKENS.keys():
         show_balance(address, web3, token=token)
     print("-" * 50)
-    
-
-    swap_type  = False
-    while True:
-            # Minta input dari user
-            swap_method = input("Bạn muốn chạy swap tự động hoặc một lần? (auto/once): ").strip().lower()
-
-            # Cek apakah input adalah "auto" atau "once"
-            if swap_method == "auto":
-                swap_type = True
-                break
-            elif swap_method == "once":
-                swap_type = False
-                break
-            else:
-                loging.log_warning("❌ Lỗi. Vui lòng nhập 'auto' hoặc 'once'.")
-                continue
-                
-    while True:
-        try:
-            swap_count = int(input("Bạn muốn swap bao nhiêu lần? : "))
-            break  
-        except ValueError:
-            loging.log_warning("Lỗi. Vui lòng nhập số.")
-            continue
-        
-    while True:
-        try:
-            swap_percent = float(input("Bạn muốn swap bao nhiêu phần trăm? (1-100): "))
-            swap_percent = swap_percent / 100
-            break  
-        except ValueError:
-            loging.log_warning("Lỗi. Vui lòng nhập số.")
-            continue
-    
     
     while True:
         for i in range(swap_count):
@@ -104,8 +69,6 @@ def main(PRIVATE_KEY):
             break
         
 
-
-    
 if __name__ == "__main__":
     try:
         # Đọc danh sách private key từ file wallets.txt
@@ -114,12 +77,36 @@ if __name__ == "__main__":
             exit(1)
         with open("wallets.txt") as f:
             private_keys = [line.strip() for line in f if line.strip()]
+
+        # Hỏi thông tin 1 lần duy nhất
+        while True:
+            swap_method = input("Bạn muốn chạy swap tự động hoặc một lần? (auto/once): ").strip().lower()
+            if swap_method in ["auto", "once"]:
+                swap_type = swap_method == "auto"
+                break
+            else:
+                print("❌ Lỗi. Vui lòng nhập 'auto' hoặc 'once'.")
+        while True:
+            try:
+                swap_count = int(input("Bạn muốn swap bao nhiêu lần? : "))
+                break
+            except ValueError:
+                print("Lỗi. Vui lòng nhập số.")
+        while True:
+            try:
+                swap_percent = float(input("Bạn muốn swap bao nhiêu phần trăm? (1-100): "))
+                swap_percent = swap_percent / 100
+                break
+            except ValueError:
+                print("Lỗi. Vui lòng nhập số.")
+
+        # Chạy lần lượt cho từng ví, truyền các tham số vào main
         for idx, PRIVATE_KEY in enumerate(private_keys):
             print(f"\n=============================")
             print(f"=== ĐANG CHẠY VÍ SỐ {idx+1}: ...{PRIVATE_KEY[-6:]} ===")
             print(f"=============================")
             try:
-                main(PRIVATE_KEY)
+                main(PRIVATE_KEY, swap_type, swap_count, swap_percent)
             except Exception as e:
                 loging.log_warning(f"Lỗi với ví ...{PRIVATE_KEY[-6:]}: {e}")
     except KeyboardInterrupt:
