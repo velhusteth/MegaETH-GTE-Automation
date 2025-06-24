@@ -14,12 +14,10 @@ import os
 
 load_dotenv()
 
-def main():
-    
+def main(PRIVATE_KEY):
     print(appearance.ASCII_ART)
     print(appearance.CREDIT)
     
-    PRIVATE_KEY = os.getenv("PRIVATE_KEY") 
     account = Account.from_key('0x' + PRIVATE_KEY)
     address = account.address
     web3 = Web3(Web3.HTTPProvider(config.RPC_URL))
@@ -110,8 +108,20 @@ def main():
     
 if __name__ == "__main__":
     try:
-        
-        main()
+        # Đọc danh sách private key từ file wallets.txt
+        if not os.path.exists("wallets.txt"):
+            print("Không tìm thấy file wallets.txt! Hãy tạo file này và điền mỗi private key trên 1 dòng.")
+            exit(1)
+        with open("wallets.txt") as f:
+            private_keys = [line.strip() for line in f if line.strip()]
+        for idx, PRIVATE_KEY in enumerate(private_keys):
+            print(f"\n=============================")
+            print(f"=== ĐANG CHẠY VÍ SỐ {idx+1}: ...{PRIVATE_KEY[-6:]} ===")
+            print(f"=============================")
+            try:
+                main(PRIVATE_KEY)
+            except Exception as e:
+                loging.log_warning(f"Lỗi với ví ...{PRIVATE_KEY[-6:]}: {e}")
     except KeyboardInterrupt:
         loging.log_warning("Chương trình kết thúc.")
 
